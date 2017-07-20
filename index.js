@@ -126,16 +126,7 @@ const handlers = {
                 this.emit(':tellWithCard', speechOutput,'UKHighway', speechOutput);
             }.bind(this))
             .catch(function(error) {console.error('error: ', error)});
-        // // Get a random space fact from the space facts list
-        // // Use this.t() to get corresponding language data
-        // const factArr = this.t('FACTS');
-        // const factIndex = Math.floor(Math.random() * factArr.length);
-        // const randomFact = factArr[factIndex];
 
-        // console.log(outerItems);
-        // // Create speech output
-        // const speechOutput ='outerItems has ' +outerItems.length +' items';
-        // this.emit(':tellWithCard', speechOutput,'UKHighway', speechOutput);
 
     },
     'AMAZON.HelpIntent': function () {
