@@ -2,19 +2,36 @@
     var items =[];
 
 
-    var request = require('request'); // for fetching the feed
+
     const feedparser = require('feedparser-promised');
 
     const url = 'http://api.hatrafficinfo.dft.gov.uk/datexphase2/dtxRss.aspx?srcUrl=http://hatrafficinfo.dft.gov.uk/feeds/rss/UnplannedEvents.xml&justToday=Y&sortfield=road&sortorder=up';
+     var road = this.event.request.intent.slots.road.value;
 
     feedparser.parse(url)
-        .then(function (items, self) {
-            console.log('ReadItem length'+items.length);
+        .then(function (items) {
 
-            const speechOutput ='outerItems has ' +items.length +' items';
+            console.log('Items length'+items.length);
+            var matchedRoads = items.filter(function (item) {
+                var itemRoad = item["rss:road"]["#"].toLowerCase();
+                return itemRoad=== road.toLowerCase();
+            });
+            var speechOutput ='There is no traffic on ';+road;
+            if(matchedRoads.length>0){
+                var trafficDetails = matchedRoads.map(function (matchedRoad) {
+                    return matchedRoad.title.replace('|','');
+                })
+                speechOutput = trafficDetails.join();
+
+            }
+
+
+
             this.emit(':tellWithCard', speechOutput,'UKHighway', speechOutput);
+
         }.bind(this))
         .catch(function(error) {console.error('error: ', error)});
+
     // // Get a random space fact from the space facts list
     // // Use this.t() to get corresponding language data
     // const factArr = this.t('FACTS');
