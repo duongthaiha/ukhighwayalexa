@@ -26,8 +26,13 @@ const handlers = {
     'UKHighway': function () {
 
         const url = 'http://api.hatrafficinfo.dft.gov.uk/datexphase2/dtxRss.aspx?srcUrl=http://hatrafficinfo.dft.gov.uk/feeds/rss/UnplannedEvents.xml&justToday=Y&sortfield=road&sortorder=up';
-        var road = this.event.request.intent.slots.road.value;
-
+        var road = this.event.request.intent.slots.road.value.toLocaleLowerCase();
+        console.log('Road is '+ road);
+        if(!road || road == undefined || road == "" || road.length == 0){
+            var CANTFINDROAD ='Sorry I dont have any information about this road';
+            this.emit(':tellWithCard', CANTFINDROAD,'UKHighway', CANTFINDROAD);
+            return;
+        }
         feedparser.parse(url)
             .then(function (items) {
 
@@ -36,12 +41,19 @@ const handlers = {
                     var itemRoad = item["rss:road"]["#"].toLowerCase();
                     return itemRoad=== road.toLowerCase();
                 });
-                var speechOutput ='There is no traffic on ';+road;
+                var speechOutput ='There is no incident on '+road;
                 if(matchedRoads.length>0){
                     var trafficDetails = matchedRoads.map(function (matchedRoad) {
-                        return matchedRoad.title.replace('|','');
+
+                        return matchedRoad.title.split('|')[0].toLocaleLowerCase().replace(road,'');
                     })
-                    speechOutput = trafficDetails.join();
+                    var summary ='';
+                    if(matchedRoads.length==1){
+                        summary = 'There is only one incident on '+road ;
+                    }else{
+                        summary = 'There is ' + matchedRoads.length +' incidents on ' +road;
+                    }
+                    speechOutput = summary + ' ' + trafficDetails.join();
                     console.log('speechOutPut '+ speechOutput);
                 }
 
