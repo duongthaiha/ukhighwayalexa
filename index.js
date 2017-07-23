@@ -14,14 +14,18 @@ const Alexa = require('alexa-sdk');
 
 const feedparser = require('feedparser-promised');
 const APP_ID = 'amzn1.ask.skill.b53fd34d-0921-414c-8242-1307f8ac7995';  // TODO replace with your app ID (OPTIONALv
-
+const HELP_MESSAGE ='You can ask for road incident or traffic on UK highway network. The information is provided for me by Highway Agency';
+const STOP_MESSAGE ='No problem';
+const CANCEL_MESSAGE ='No problem';
 const handlers = {
     'LaunchRequest': function () {
+        console.log('In launch request');
         this.emit('UKHighway');
     },
     'GetUKHighwayIntent': function () {
         this.emit('UKHighway');
     },
+
 
     'UKHighway': function () {
 
@@ -67,15 +71,14 @@ const handlers = {
 
     },
     'AMAZON.HelpIntent': function () {
-        const speechOutput = this.t('HELP_MESSAGE');
-        const reprompt = this.t('HELP_MESSAGE');
-        this.emit(':ask', speechOutput, reprompt);
+        console.log('Help triggered');
+       this.emit(':tell',HELP_MESSAGE);
     },
     'AMAZON.CancelIntent': function () {
-        this.emit(':tell', this.t('STOP_MESSAGE'));
+        this.emit(':tell', CANCEL_MESSAGE);
     },
     'AMAZON.StopIntent': function () {
-        this.emit(':tell', this.t('STOP_MESSAGE'));
+        this.emit(':tell', STOP_MESSAGE);
     },
 };
 
