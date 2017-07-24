@@ -32,16 +32,17 @@ const handlers = {
     'UKHighway': function () {
 
         const url = 'http://api.hatrafficinfo.dft.gov.uk/datexphase2/dtxRss.aspx?srcUrl=http://hatrafficinfo.dft.gov.uk/feeds/rss/UnplannedEvents.xml&justToday=Y&sortfield=road&sortorder=up';
-        if(!this.event.request.intent == undefined){
+        console.log(this.event.request);
+        if(this.event.request.intent == undefined){
             console.log("Can not find intent");
             this.emit(':tell',UNKNOW_MESSAGE);
         }
-        if(!this.event.request.intent.slots == undefined){
+        if(this.event.request.intent.slots == undefined){
             console.log("Can not find slots");
             this.emit(':tell',UNKNOW_MESSAGE);
         }
 
-        if(!this.event.request.intent.slots.road == undefined){
+        if(this.event.request.intent.slots.road == undefined){
             console.log("Can not find road");
             this.emit(':tell',UNKNOW_MESSAGE);
         }
@@ -99,6 +100,10 @@ const handlers = {
     'AMAZON.StopIntent': function () {
         this.emit(':tell', STOP_MESSAGE);
     },
+    'Unhandled': function() {
+        console.log('Unhandler is triggered');
+        this.emit(':tell',UNKNOW_MESSAGE);
+    }
 };
 
 exports.handler = function (event, context) {
