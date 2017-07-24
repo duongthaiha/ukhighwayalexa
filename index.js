@@ -17,6 +17,8 @@ const APP_ID = 'amzn1.ask.skill.b53fd34d-0921-414c-8242-1307f8ac7995';  // TODO 
 const HELP_MESSAGE ='You can ask for road incident or traffic on UK highway network. The information is provided for me by Highway Agency';
 const STOP_MESSAGE ='No problem';
 const CANCEL_MESSAGE ='No problem';
+const ERROR_MESSAGE = 'Opss there is something wrong. We will look into this for you. Please try again'
+const UNKNOW_MESSAGE ='Sorry I can not help with this request Try asking question like open Highway Agency any incident on M1';
 const handlers = {
     'LaunchRequest': function () {
         console.log('In launch request');
@@ -30,6 +32,19 @@ const handlers = {
     'UKHighway': function () {
 
         const url = 'http://api.hatrafficinfo.dft.gov.uk/datexphase2/dtxRss.aspx?srcUrl=http://hatrafficinfo.dft.gov.uk/feeds/rss/UnplannedEvents.xml&justToday=Y&sortfield=road&sortorder=up';
+        if(!this.event.request.intent == undefined){
+            console.log("Can not find intent");
+            this.emit(':tell',UNKNOW_MESSAGE);
+        }
+        if(!this.event.request.intent.slots == undefined){
+            console.log("Can not find slots");
+            this.emit(':tell',UNKNOW_MESSAGE);
+        }
+
+        if(!this.event.request.intent.slots.road == undefined){
+            console.log("Can not find road");
+            this.emit(':tell',UNKNOW_MESSAGE);
+        }
         var road = this.event.request.intent.slots.road.value.toLocaleLowerCase();
         console.log('Road is '+ road);
         if(!road || road == undefined || road == "" || road.length == 0){
@@ -66,7 +81,11 @@ const handlers = {
                 this.emit(':tellWithCard', speechOutput,'UKHighway', speechOutput);
 
             }.bind(this))
-            .catch(function(error) {console.error('error: ', error)});
+            .catch(function(error) {
+
+                console.error('error: ', error)
+                this.emit(':tell',ERROR_MESSAGE);
+            });
 
 
     },
