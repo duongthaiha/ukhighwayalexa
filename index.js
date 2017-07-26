@@ -18,7 +18,9 @@ const HELP_MESSAGE ='You can ask for road incident or traffic on UK highway netw
 const STOP_MESSAGE ='No problem';
 const CANCEL_MESSAGE ='No problem';
 const ERROR_MESSAGE = 'Opss there is something wrong. We will look into this for you. Please try again'
-const UNKNOW_MESSAGE ='Sorry I can not help with this request Try asking question like open Highway Agency any incident on M1';
+const WELCOME_MESSAGE ='I can get latest motorway information for you.  You can ask questions like: any incident on M1?';
+const MISSING_SLOT ='What motorway do you want to know about?';
+const UNHANDLED = 'I am not sure how to handle this request. Try again something like:  Ask Highway Agency for any incident on M1';
 const handlers = {
     'LaunchRequest': function () {
         console.log('In launch request');
@@ -35,24 +37,40 @@ const handlers = {
         console.log(this.event.request);
         if(this.event.request.intent == undefined){
             console.log("Can not find intent");
-            this.emit(':tell',UNKNOW_MESSAGE);
+            this.emit(':ask',WELCOME_MESSAGE);
+            return;
         }
         if(this.event.request.intent.slots == undefined){
             console.log("Can not find slots");
-            this.emit(':tell',UNKNOW_MESSAGE);
+            this.emit(':ask',MISSING_SLOT);
+            return;
         }
 
         if(this.event.request.intent.slots.road == undefined){
             console.log("Can not find road");
-            this.emit(':tell',UNKNOW_MESSAGE);
-        }
-        var road = this.event.request.intent.slots.road.value.toLocaleLowerCase();
-        console.log('Road is '+ road);
-        if(!road || road == undefined || road == "" || road.length == 0){
-            var CANTFINDROAD ='Sorry I dont have any information about this road';
-            this.emit(':tellWithCard', CANTFINDROAD,'UKHighway', CANTFINDROAD);
+            this.emit(':ask',MISSING_SLOT);
             return;
         }
+        console.log('Road is '+this.event.request.intent.slots.road);
+
+        var road = this.event.request.intent.slots.road;
+
+        if(!road || road == undefined || road == "" || road.length == 0){
+
+            this.emit(':ask', MISSING_SLOT);
+            return;
+
+
+        }
+
+        console.log('Road value is '+ this.event.request.intent.slots.road.value);
+        var road = road.value;
+        console.log('Current value of road variable is ' +road);
+        if(!road || road == undefined || road == "" || road.length == 0){
+            this.emit(':ask', MISSING_SLOT);
+            return;
+        }
+        road = road.toLocaleLowerCase();
         feedparser.parse(url)
             .then(function (items) {
 
@@ -102,7 +120,7 @@ const handlers = {
     },
     'Unhandled': function() {
         console.log('Unhandler is triggered');
-        this.emit(':tell',UNKNOW_MESSAGE);
+        this.emit(':tell',UNHANDLED);
     }
 };
 
