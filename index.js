@@ -14,13 +14,13 @@ const Alexa = require('alexa-sdk');
 
 const feedparser = require('feedparser-promised');
 const APP_ID = 'amzn1.ask.skill.b53fd34d-0921-414c-8242-1307f8ac7995';  // TODO replace with your app ID (OPTIONALv
-const HELP_MESSAGE ='You can ask for road incident or traffic on UK highway network. The information is provided for me by Highway Agency';
+const HELP_MESSAGE ='You can ask for road incident or traffic on UK highway network. What motorway do you want to know about?';
 const STOP_MESSAGE ='No problem';
 const CANCEL_MESSAGE ='No problem';
 const ERROR_MESSAGE = 'Opss there is something wrong. We will look into this for you. Please try again'
 const WELCOME_MESSAGE ='I can get latest motorway information for you.  You can ask questions like: any incident on M1?';
 const MISSING_SLOT ='What motorway do you want to know about?';
-const UNHANDLED = 'I am not sure how to handle this request. Try again something like:  Ask Highway Agency for any incident on M1';
+const UNHANDLED = 'I am not sure how to handle this request. Try again something like:  any incident on M1';
 const handlers = {
     'LaunchRequest': function () {
         console.log('In launch request');
@@ -97,12 +97,12 @@ const handlers = {
 
 
 
-                this.emit(':tellWithCard', speechOutput,'UKHighway', speechOutput);
+                this.emit(':tell', speechOutput);
 
             }.bind(this))
             .catch(function(error) {
 
-                console.error('error: ', error)
+                console.error('error: ', error);
                 this.emit(':tell',ERROR_MESSAGE);
             });
 
@@ -110,7 +110,7 @@ const handlers = {
     },
     'AMAZON.HelpIntent': function () {
         console.log('Help triggered');
-       this.emit(':tell',HELP_MESSAGE);
+       this.emit(':ask',HELP_MESSAGE);
     },
     'AMAZON.CancelIntent': function () {
         this.emit(':tell', CANCEL_MESSAGE);
@@ -120,7 +120,8 @@ const handlers = {
     },
     'Unhandled': function() {
         console.log('Unhandler is triggered');
-        this.emit(':tell',UNHANDLED);
+        this.emit(':ask',UNHANDLED);
+        return;
     }
 };
 
